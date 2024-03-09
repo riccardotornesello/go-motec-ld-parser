@@ -1,4 +1,4 @@
-package ld_file
+package ldfile
 
 type LdFileHead struct {
 	LDMarker            uint32 // 0x40

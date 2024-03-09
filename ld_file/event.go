@@ -1,4 +1,4 @@
-package ld_file
+package ldfile
 
 type LdFileEvent struct {
 	Name         [64]byte

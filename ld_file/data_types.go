@@ -1,4 +1,4 @@
-package ld_file
+package ldfile
 
 type DataType struct {
 	DataType       uint16

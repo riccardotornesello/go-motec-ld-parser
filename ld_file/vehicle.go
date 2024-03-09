@@ -1,4 +1,4 @@
-package ld_file
+package ldfile
 
 type LdFileVehicle struct {
 	Id      [64]byte

@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"motecldparser.riccardotornesello.it/ld_file"
+	"riccardotornesello.it/motec-ld-parser/ldfile"
 )
 
 /*
@@ -56,11 +56,11 @@ type Channel[T float32 | int16 | int32] struct {
 
 func (f *File) Write(fd *os.File) {
 	// Calculate pointers
-	headerSize := uintptr(binary.Size(ld_file.LdFileHead{}))
-	eventSize := uintptr(binary.Size(ld_file.LdFileEvent{}))
-	venueSize := uintptr(binary.Size(ld_file.LdFileVenue{}))
-	vehicleSize := uintptr(binary.Size(ld_file.LdFileVehicle{}))
-	channelMetaSize := uintptr(binary.Size(ld_file.LdFileChannelMeta{}))
+	headerSize := uintptr(binary.Size(ldfile.LdFileHead{}))
+	eventSize := uintptr(binary.Size(ldfile.LdFileEvent{}))
+	venueSize := uintptr(binary.Size(ldfile.LdFileVenue{}))
+	vehicleSize := uintptr(binary.Size(ldfile.LdFileVehicle{}))
+	channelMetaSize := uintptr(binary.Size(ldfile.LdFileChannelMeta{}))
 
 	eventPointer := headerSize
 	venuePointer := eventPointer + eventSize
@@ -69,7 +69,7 @@ func (f *File) Write(fd *os.File) {
 	channelsDataPointer := channelsMetaPointer + channelMetaSize*uintptr(len(f.Channels))
 
 	// Create the file header
-	head := ld_file.LdFileHead{
+	head := ldfile.LdFileHead{
 		LDMarker:         0x40,
 		Unknown1:         1,
 		Unknown2:         0x4240,
@@ -97,7 +97,7 @@ func (f *File) Write(fd *os.File) {
 	copy(head.ShortComment[:], f.ShortComment)
 
 	// Create the Event
-	event := ld_file.LdFileEvent{
+	event := ldfile.LdFileEvent{
 		VenuePointer: uint16(venuePointer),
 	}
 
@@ -106,14 +106,14 @@ func (f *File) Write(fd *os.File) {
 	copy(event.Comment[:], f.EventComment)
 
 	// Create the Venue
-	venue := ld_file.LdFileVenue{
+	venue := ldfile.LdFileVenue{
 		VehiclePointer: uint16(vehiclePointer),
 	}
 
 	copy(venue.Name[:], f.Venue)
 
 	// Create the Vehicle
-	vehicle := ld_file.LdFileVehicle{
+	vehicle := ldfile.LdFileVehicle{
 		Weight: f.VehicleWeight,
 	}
 
@@ -161,33 +161,33 @@ func (c *Channel[T]) Write(
 	channelsMetaPointer uintptr,
 	currentDataPointer uintptr,
 ) uintptr {
-	var dataType ld_file.DataType
+	var dataType ldfile.DataType
 	var previousMetaPointer uintptr = 0
 	var nextMetaPointer uintptr = 0
 
 	switch any(c).(type) {
 	case *Channel[float32]:
-		dataType = ld_file.DataTypeFloat32
+		dataType = ldfile.DataTypeFloat32
 		break
 	case *Channel[int16]:
-		dataType = ld_file.DataTypeInt16
+		dataType = ldfile.DataTypeInt16
 		break
 	case *Channel[int32]:
-		dataType = ld_file.DataTypeInt32
+		dataType = ldfile.DataTypeInt32
 		break
 	}
 
 	if n > 0 {
-		previousMetaPointer = channelsMetaPointer + uintptr(binary.Size(ld_file.LdFileChannelMeta{}))*(uintptr(n-1))
+		previousMetaPointer = channelsMetaPointer + uintptr(binary.Size(ldfile.LdFileChannelMeta{}))*(uintptr(n-1))
 	}
 
 	if n < uint16(channelsCount-1) {
-		nextMetaPointer = channelsMetaPointer + uintptr(binary.Size(ld_file.LdFileChannelMeta{}))*(uintptr(n+1))
+		nextMetaPointer = channelsMetaPointer + uintptr(binary.Size(ldfile.LdFileChannelMeta{}))*(uintptr(n+1))
 	}
 
-	currentMetaPointer := channelsMetaPointer + uintptr(binary.Size(ld_file.LdFileChannelMeta{}))*uintptr(n)
+	currentMetaPointer := channelsMetaPointer + uintptr(binary.Size(ldfile.LdFileChannelMeta{}))*uintptr(n)
 
-	channelMeta := ld_file.LdFileChannelMeta{
+	channelMeta := ldfile.LdFileChannelMeta{
 		PreviousMetaPointer: uint32(previousMetaPointer),
 		NextMetaPointer:     uint32(nextMetaPointer),
 		DataPointer:         uint32(currentDataPointer),
