@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/riccardotornesello/go-motec-ld-parser/ldfile"
+	"github.com/riccardotornesello/motecldparser/ldfile"
 )
 
 /*
